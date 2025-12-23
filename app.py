@@ -361,19 +361,19 @@ else:
                 else: data = r.get_frame(0)
             else:
                 with fits.open(f) as h: data = h[0].data
-    elif input_source == "Live Camera":
-    st.subheader("Live Camera Capture")
-
-    cam_image = st.camera_input("Capture a frame")
-
-    if cam_image is not None:
-        image = Image.open(cam_image)
-        frame = np.array(image.convert("L"))  # grayscale
-
-        st.success("Frame captured successfully")
-
-        st.session_state.captured_data = frame
-        data = frame
+        elif input_source == "Live Camera":
+        st.subheader("Live Camera Capture")
+    
+        cam_image = st.camera_input("Capture a frame")
+    
+        if cam_image is not None:
+            image = Image.open(cam_image)
+            frame = np.array(image.convert("L"))  # grayscale
+    
+            st.success("Frame captured successfully")
+    
+            st.session_state.captured_data = frame
+            data = frame
 
 
     else:
