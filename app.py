@@ -268,8 +268,13 @@ if st.session_state.user is None:
 else:
     # SIDEBAR
     with st.sidebar:
-        st.image("Nakshatra_transparent_1.png", width=None)
-        st.markdown(f"**👤 {st.session_state.user['role']}**")
+        # SAFETY CHECK: Only try to show image if it exists
+        try:
+            st.image("Nakshatra_transparent_1.png", width=None)
+        except Exception:
+            st.markdown("<h2 style='color: #FF4B4B;'>🔭 N-SIGHT</h2>", unsafe_allow_html=True)
+            
+        st.markdown(f"**👤 {st.session_state.user['role']}:** {st.session_state.user['email']}")
         if st.button("Logout", use_container_width=True): st.session_state.user = None; st.rerun()
         st.divider()
         
@@ -284,10 +289,11 @@ else:
 
     # HEADER
     c1, c2 = st.columns([3,1])
-    c1.title("Spectral Dashboard")
+    c1.title("Spectral Analysis Dashboard")
     c2.metric("System Status", "Online" if st.session_state.db_connected else "Local", delta_color="normal")
 
-    # DATA INGESTION
+    # ... (Keep the rest of the logic: INPUT HANDLING, PROCESSING, TABS same as before) ...
+    # INPUT HANDLING
     data = None
     if input_source == "Upload File":
         f = st.file_uploader("Upload Spectral Data", type=["fit", "fits", "ser"])
@@ -300,16 +306,19 @@ else:
             else:
                 with fits.open(f) as h: data = h[0].data
     elif input_source == "Live Camera":
-        if st.button("Start/Stop Camera", use_container_width=True): st.session_state.run_cam = not st.session_state.run_cam
-        if st.session_state.run_cam:
-            cap = cv2.VideoCapture(0)
-            ret, frame = cap.read()
-            if ret:
-                st.image(frame, channels="BGR", use_container_width=True)
-                if st.button("📸 Capture Frame", use_container_width=True):
-                    st.session_state.captured_data = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                    st.session_state.run_cam = False; st.rerun()
-            cap.release()
+        col_cam1, col_cam2 = st.columns([1, 2])
+        with col_cam1:
+            if st.button("Toggle Camera", use_container_width=True): st.session_state.run_cam = not st.session_state.run_cam
+        with col_cam2:
+            if st.session_state.run_cam:
+                cap = cv2.VideoCapture(0)
+                ret, frame = cap.read()
+                if ret:
+                    st.image(frame, channels="BGR", use_container_width=True)
+                    if st.button("📸 Capture Frame", use_container_width=True):
+                        st.session_state.captured_data = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                        st.session_state.run_cam = False; st.rerun()
+                cap.release()
         if st.session_state.captured_data is not None: data = st.session_state.captured_data
     else:
         x = np.linspace(4000, 7000, 1000)
@@ -391,6 +400,10 @@ else:
             if st.session_state.db_connected:
                 u_count = len(list(db.collection('users').stream()))
                 s_count = len(list(db.collection('spectra').stream()))
+                c1, c2 = st.columns(2)
+                c1.metric("Users", u_count)
+                c2.metric("Records", s_count)
+                st.dataframe([{"User": d.to_dict()['user_id'], "Label": d.to_dict()['label']} for d in db.collection('spectra').stream()], use_container_width=True)
                 c1, c2 = st.columns(2)
                 c1.metric("Users", u_count)
                 c2.metric("Records", s_count)
