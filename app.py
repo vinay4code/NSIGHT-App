@@ -122,27 +122,25 @@ def resample(w,f,n=1000):
 # ================= LOGIN (SHORTENED) =================
 if st.session_state.user is None:
 
-    # ---- Centered login layout ----
-    st.markdown("""
-    <div class="login-wrapper">
-        <div class="login-card">
-    """, unsafe_allow_html=True)
+    st.markdown("<br><br><br><br>", unsafe_allow_html=True)
 
-    st.markdown("<h1 class='login-title'>N-SIGHT</h1>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 1.2, 1])
 
-    email = st.text_input("Email")
-    password = st.text_input("Password", type="password")
+    with col2:
+        st.markdown(
+            "<h1 style='text-align:center; letter-spacing:3px;'>N-SIGHT</h1>",
+            unsafe_allow_html=True
+        )
 
-    if st.button("Login", use_container_width=True):
-        st.session_state.user = {"email": email, "role": "Admin"}
-        st.rerun()
+        email = st.text_input("Email")
+        password = st.text_input("Password", type="password")
 
-    st.markdown("""
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+        if st.button("Login", use_container_width=True):
+            st.session_state.user = {"email": email, "role": "Admin"}
+            st.rerun()
 
     st.stop()
+
 
 # ================= SIDEBAR (FIRST) =================
 with st.sidebar:
