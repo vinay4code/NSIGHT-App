@@ -386,7 +386,7 @@ else:
         x = np.linspace(4000, 7000, 1000)
         data = 100 + (x-4000)*0.03 + 500*np.exp(-0.5*((x-6563)/10)**2) + np.random.normal(0, 3, 1000)
     if data is not None:
-    data_ready = True
+        data_ready = True
 
 
     # VISUALIZATION & LOGIC
