@@ -43,92 +43,102 @@ else:
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
-    page_title="N-SIGHT | Full-Stack ML",
+    page_title="N-SIGHT | Spectral Intelligence Platform",
     layout="wide",
-    page_icon="🔭",
     initial_sidebar_state="expanded"
 )
+
 
 # --- ADVANCED UI STYLING (Mobile & Desktop) ---
 def apply_custom_style():
     st.markdown("""
-        <style>
-        /* --- GLOBAL VARIABLES --- */
-        :root {
-            --primary: #00F0FF;
-            --bg-glass: rgba(17, 22, 32, 0.7);
-            --border-glass: rgba(255, 255, 255, 0.1);
-        }
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
 
-        /* --- MOBILE OPTIMIZATION --- */
-        /* Reduce the massive top padding Streamlit adds by default */
-        .block-container {
-            padding-top: 2rem !important;
-            padding-bottom: 5rem !important;
-            padding-left: 1rem !important;
-            padding-right: 1rem !important;
-        }
-        
-        /* Hide the default hamburger menu on mobile for a cleaner look */
-        #MainMenu {visibility: hidden;}
-        header {visibility: hidden;}
+    :root {
+        --primary: #4FC3F7;     /* soft spectral cyan */
+        --accent: #81D4FA;
+        --bg-main: #0B0F14;     /* deep lab background */
+        --bg-card: rgba(20, 25, 35, 0.75);
+        --border: rgba(255,255,255,0.08);
+        --text-main: #E6EDF3;
+        --text-muted: #9BA3AF;
+    }
 
-        /* --- GLASSMORPHISM CARDS --- */
-        div[data-testid="stMetric"], div[data-testid="stExpander"] {
-            background: var(--bg-glass);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid var(--border-glass);
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease;
-        }
-        
-        div[data-testid="stMetric"]:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-main);
+        color: var(--text-main);
+    }
 
-        /* --- TYPOGRAPHY --- */
-        h1 { font-weight: 800 !important; letter-spacing: -1px; background: -webkit-linear-gradient(0deg, #fff, #999); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        h2, h3 { font-weight: 600 !important; color: #eee !important; }
-        p, label { color: #bbb !important; }
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 4rem !important;
+    }
 
-        /* --- BUTTONS --- */
-        .stButton>button {
-            background: linear-gradient(135deg, #00F0FF 0%, #0061ff 100%);
-            color: #000;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            height: 3rem;
-            width: 100%; /* Full width for mobile touch targets */
-            transition: all 0.3s ease;
-        }
-        .stButton>button:hover {
-            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.4);
-            color: #fff;
-        }
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
 
-        /* --- INPUT FIELDS --- */
-        input {
-            background-color: #0d1117 !important;
-            color: #fff !important;
-            border: 1px solid #30363d !important;
-            border-radius: 8px !important;
-        }
-        
-        /* --- LOGIN CARD CONTAINER --- */
-        .login-container {
-            background: #111620;
-            padding: 2rem;
-            border-radius: 16px;
-            border: 1px solid #30363d;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            margin-top: 10vh;
-        }
-        </style>
+    /* Cards */
+    div[data-testid="stMetric"],
+    div[data-testid="stExpander"],
+    section[data-testid="stSidebar"] {
+        background: var(--bg-card);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+    }
+
+    /* Headings */
+    h1 {
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+
+    h2, h3 {
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    p, label {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+    /* Buttons */
+    .stButton>button {
+        background: linear-gradient(135deg, var(--primary), #0288D1);
+        color: #021018;
+        border-radius: 10px;
+        font-weight: 600;
+        height: 3rem;
+        border: none;
+        transition: all 0.25s ease;
+    }
+
+    .stButton>button:hover {
+        background: linear-gradient(135deg, #81D4FA, var(--primary));
+        box-shadow: 0 0 18px rgba(79,195,247,0.35);
+    }
+
+    /* Inputs */
+    input, textarea, select {
+        background-color: #0F141C !important;
+        color: var(--text-main) !important;
+        border-radius: 8px !important;
+        border: 1px solid var(--border) !important;
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Numeric / spectral data */
+    .metric-value, code {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 600;
+    }
+
+    </style>
     """, unsafe_allow_html=True)
+
 
 apply_custom_style()
 
@@ -170,7 +180,7 @@ def check_pass(password, hashed): return bcrypt.checkpw(password.encode(), hashe
 
 def register_user(email, password, role="Student"):
     if not st.session_state.db_connected:
-        st.error("⚠️ Offline Mode. Cannot Register.")
+        st.error("Offline Mode. Cannot Register.")
         return
     users_ref = db.collection('users')
     if any(users_ref.where('email', '==', email).stream()):
@@ -202,17 +212,17 @@ def save_spectrum(label, wav, flux, user_email):
         'wavelengths': w_s.tolist(), 'flux': f_s.tolist(),
         'timestamp': datetime.datetime.now()
     })
-    st.toast("✅ Saved to Cloud")
+    st.toast("Saved to Cloud")
 
 def update_spectrum(doc_id, new_label):
     if st.session_state.db_connected:
         db.collection('spectra').document(doc_id).update({'label': new_label})
-        st.toast("✏️ Updated")
+        st.toast("Updated")
 
 def delete_spectrum(doc_id):
     if st.session_state.db_connected:
         db.collection('spectra').document(doc_id).delete()
-        st.toast("🗑️ Deleted")
+        st.toast("Deleted")
 
 # --- SESSION STATE ---
 if 'user' not in st.session_state: st.session_state.user = None
@@ -248,7 +258,7 @@ if st.session_state.user is None:
                 email = st.text_input("Email Address", key="l_email")
                 password = st.text_input("Password", type="password", key="l_pass")
                 st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-                if st.button("🚀 Login", use_container_width=True):
+                if st.button("Login", use_container_width=True):
                     user = login_user(email, password)
                     if user: st.session_state.user = user; st.rerun()
                     else: st.error("Invalid Login")
@@ -258,7 +268,7 @@ if st.session_state.user is None:
                 r_pass = st.text_input("Password", type="password", key="r_pass")
                 r_role = st.selectbox("Role", ["Student", "Admin"])
                 st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-                if st.button("✨ Create Account", use_container_width=True):
+                if st.button("Create Account", use_container_width=True):
                     register_user(r_email, r_pass, r_role)
 
         if not st.session_state.db_connected: 
@@ -272,18 +282,18 @@ else:
         try:
             st.image("Nakshatra_transparent_1.png", width=None)
         except Exception:
-            st.markdown("<h2 style='color: #FF4B4B;'>🔭 N-SIGHT</h2>", unsafe_allow_html=True)
+            st.markdown("<h2 style='color: #FF4B4B;'>N-SIGHT</h2>", unsafe_allow_html=True)
             
-        st.markdown(f"**👤 {st.session_state.user['role']}:** {st.session_state.user['email']}")
+        st.markdown(f"**{st.session_state.user['role']}:** {st.session_state.user['email']}")
         if st.button("Logout", use_container_width=True): st.session_state.user = None; st.rerun()
         st.divider()
         
-        input_source = st.radio("📡 Data Source", ["Upload File", "Live Camera", "Simulation"])
+        input_source = st.radio("Data Source", ["Upload File", "Live Camera", "Simulation"])
         
-        with st.expander("⚙️ Calibration Settings"):
+        with st.expander("Calibration Settings"):
             start_wl = st.number_input("Start Å", 4000.0, step=100.0)
             disp = st.number_input("Å/px", 1.5, step=0.1)
-        with st.expander("🎛️ Signal Processing"):
+        with st.expander("Signal Processing"):
             smooth = st.slider("Smoothing", 1, 21, 5, 2)
             deriv = st.selectbox("Derivative", [0, 1, 2], format_func=lambda x: ["Raw","Slope","Curve"][x])
 
@@ -336,12 +346,12 @@ else:
         x_axis = start_wl + (np.arange(len(flux)) * disp)
 
         # TABS
-        tabs = ["📊 Analyze", "🧠 ML Lab", "💾 Library"]
-        if st.session_state.user['role'] == "Admin": tabs.append("🛡️ Admin")
+        tabs = ["Analyze", "ML Lab", "Library"]
+        if st.session_state.user['role'] == "Admin": tabs.append("Admin")
         curr_tab = st.radio("Nav", tabs, horizontal=True, label_visibility="collapsed")
         st.divider()
 
-        if curr_tab == "📊 Analyze":
+        if curr_tab == "Analyze":
             # Plotly chart with 0 margins for mobile
             fig = go.Figure(go.Scatter(x=x_axis, y=flux, line=dict(color='#00F0FF', width=2), fill='tozeroy'))
             fig.update_layout(template="plotly_dark", height=350, margin=dict(l=10, r=10, t=10, b=10), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
@@ -352,7 +362,7 @@ else:
                 if st.button("Save to Cloud", use_container_width=True):
                     save_spectrum(s_name, x_axis, flux, st.session_state.user['email'])
 
-        elif curr_tab == "🧠 ML Lab":
+        elif curr_tab == "ML Lab":
             c1, c2 = st.columns(2)
             with c1:
                 st.info("1. Build Dataset")
@@ -380,8 +390,8 @@ else:
                         pred = st.session_state.trained_model.predict([input_vec])[0]
                         st.metric("Result", pred)
 
-        elif curr_tab == "💾 Library":
-            search = st.text_input("🔍 Filter...", "")
+        elif curr_tab == "Library":
+            search = st.text_input("Filter...", "")
             if st.session_state.db_connected:
                 docs = db.collection('spectra').where('user_id', '==', st.session_state.user['email']).stream()
                 for doc in docs:
@@ -396,7 +406,7 @@ else:
                                 delete_spectrum(doc.id); st.rerun()
                             st.line_chart(d['flux'], height=100)
 
-        elif curr_tab == "🛡️ Admin":
+        elif curr_tab == "Admin":
             if st.session_state.db_connected:
                 u_count = len(list(db.collection('users').stream()))
                 s_count = len(list(db.collection('spectra').stream()))
