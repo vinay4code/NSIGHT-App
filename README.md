@@ -1,15 +1,15 @@
-# 🔭 Nakshatra N-SIGHT  
+# Nakshatra N-SIGHT  
 ### Full-Stack Spectral Analysis Platform
 
 Nakshatra **N-SIGHT** is an industry-grade, full-stack web application designed for **astronomical spectral analysis**.  
 It integrates a **Machine Learning pipeline** with **cloud-based data management**, enabling researchers and students to upload, analyze, process, and classify stellar spectral data.
 
-🚀 **Live Demo:**  
+**Live Demo:**  
 > _Insert your Streamlit Cloud link here_
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 This project demonstrates **end-to-end full-stack competency**, bridging raw scientific data collection with modern cloud-native web architecture.
 
@@ -23,7 +23,7 @@ This project demonstrates **end-to-end full-stack competency**, bridging raw sci
 
 ## ✨ Key Features
 
-### 🔐 Identity & Security
+### Identity & Security
 - Custom Login & Registration System  
 - Password hashing using **bcrypt (salt + hash)**
 - **Role-Based Access Control (RBAC)**
@@ -32,7 +32,7 @@ This project demonstrates **end-to-end full-stack competency**, bridging raw sci
 
 ---
 
-### 💾 Database & Architecture
+### Database & Architecture
 - **Cloud Database:** Google Firebase Firestore (NoSQL)
 - **CRUD Operations**
   - Create: Save spectral observations
@@ -43,7 +43,7 @@ This project demonstrates **end-to-end full-stack competency**, bridging raw sci
 
 ---
 
-### 🧠 ML Pipeline & Spectral Analysis
+### ML Pipeline & Spectral Analysis
 - Signal Processing:
   - Noise reduction
   - Continuum normalization
@@ -56,7 +56,7 @@ This project demonstrates **end-to-end full-stack competency**, bridging raw sci
 
 ---
 
-## 🧰 Tech Stack
+## Tech Stack
 
 | Component        | Technology            | Description |
 |------------------|-----------------------|------------|
@@ -70,7 +70,7 @@ This project demonstrates **end-to-end full-stack competency**, bridging raw sci
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 The app follows a **Monolithic Cloud Architecture**, where frontend and backend logic reside in a single Streamlit container.
 
