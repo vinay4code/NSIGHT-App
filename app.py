@@ -15,7 +15,7 @@ import struct
 from PIL import Image
 import datetime
 import time
-import bcrypt  # Secure password hashing
+import bcrypt
 
 # --- FIREBASE SETUP ---
 import firebase_admin
@@ -43,33 +43,94 @@ else:
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
-    page_title="N-SIGHT | Full-Stack ML Pipeline",
+    page_title="N-SIGHT | Full-Stack ML",
     layout="wide",
     page_icon="🔭",
     initial_sidebar_state="expanded"
 )
 
-# --- CSS STYLING ---
-st.markdown("""
-    <style>
-    .stApp { background-color: #0b0f19; }
-    h1, h2, h3 { font-family: 'Segoe UI', sans-serif; color: #e0e0e0; }
-    
-    /* Custom Buttons */
-    .stButton>button {
-        background: linear-gradient(135deg, #FF4B4B 0%, #FF914D 100%);
-        color: white; border: none; border-radius: 8px; font-weight: bold;
-        transition: 0.3s;
-    }
-    .stButton>button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 75, 75, 0.4); }
-    
-    /* Metrics */
-    div[data-testid="stMetric"] { background-color: #151a25; border: 1px solid #2a3142; border-radius: 8px; padding: 10px; }
-    
-    /* Expanders */
-    div[data-testid="stExpander"] { border: 1px solid #2a3142; border-radius: 8px; background-color: #151a25; }
-    </style>
-""", unsafe_allow_html=True)
+# --- ADVANCED UI STYLING (Mobile & Desktop) ---
+def apply_custom_style():
+    st.markdown("""
+        <style>
+        /* --- GLOBAL VARIABLES --- */
+        :root {
+            --primary: #00F0FF;
+            --bg-glass: rgba(17, 22, 32, 0.7);
+            --border-glass: rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- MOBILE OPTIMIZATION --- */
+        /* Reduce the massive top padding Streamlit adds by default */
+        .block-container {
+            padding-top: 2rem !important;
+            padding-bottom: 5rem !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        
+        /* Hide the default hamburger menu on mobile for a cleaner look */
+        #MainMenu {visibility: hidden;}
+        header {visibility: hidden;}
+
+        /* --- GLASSMORPHISM CARDS --- */
+        div[data-testid="stMetric"], div[data-testid="stExpander"] {
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        div[data-testid="stMetric"]:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* --- TYPOGRAPHY --- */
+        h1 { font-weight: 800 !important; letter-spacing: -1px; background: -webkit-linear-gradient(0deg, #fff, #999); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h2, h3 { font-weight: 600 !important; color: #eee !important; }
+        p, label { color: #bbb !important; }
+
+        /* --- BUTTONS --- */
+        .stButton>button {
+            background: linear-gradient(135deg, #00F0FF 0%, #0061ff 100%);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            height: 3rem;
+            width: 100%; /* Full width for mobile touch targets */
+            transition: all 0.3s ease;
+        }
+        .stButton>button:hover {
+            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.4);
+            color: #fff;
+        }
+
+        /* --- INPUT FIELDS --- */
+        input {
+            background-color: #0d1117 !important;
+            color: #fff !important;
+            border: 1px solid #30363d !important;
+            border-radius: 8px !important;
+        }
+        
+        /* --- LOGIN CARD CONTAINER --- */
+        .login-container {
+            background: #111620;
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid #30363d;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            margin-top: 10vh;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+apply_custom_style()
 
 # --- HELPER CLASSES & FUNCTIONS ---
 class SERReader:
@@ -109,22 +170,20 @@ def check_pass(password, hashed): return bcrypt.checkpw(password.encode(), hashe
 
 def register_user(email, password, role="Student"):
     if not st.session_state.db_connected:
-        st.error("⚠️ Database Offline. Cannot Register.")
+        st.error("⚠️ Offline Mode. Cannot Register.")
         return
     users_ref = db.collection('users')
     if any(users_ref.where('email', '==', email).stream()):
-        st.error("User already exists!")
+        st.error("User exists!")
         return
     users_ref.add({'email': email, 'password': hash_pass(password), 'role': role, 'created_at': datetime.datetime.now()})
-    st.success("Account created! Please Login.")
+    st.success("Account created! Login now.")
 
 def login_user(email, password):
     if not st.session_state.db_connected:
-        # Offline Backdoor
         if email == "demo" and password == "demo": return {"email": "demo", "role": "Student", "id": "local"}
         if email == "admin" and password == "admin": return {"email": "admin", "role": "Admin", "id": "admin"}
         return None
-    
     users_ref = db.collection('users')
     for doc in users_ref.where('email', '==', email).stream():
         u = doc.to_dict()
@@ -166,69 +225,88 @@ if 'run_cam' not in st.session_state: st.session_state.run_cam = False
 #                       MAIN APP
 # =========================================================
 
-# --- LOGIN SCREEN ---
+# --- 1. LOGIN SCREEN (Redesigned for Mobile/Desktop) ---
 if st.session_state.user is None:
-    c1, c2, c3 = st.columns([1, 2, 1])
-    with c2:
-        st.markdown("<h1 style='text-align:center;'>🔭 N-SIGHT</h1>", unsafe_allow_html=True)
-        tab1, tab2 = st.tabs(["Login", "Register"])
-        with tab1:
-            email = st.text_input("Email", key="l_email")
-            password = st.text_input("Password", type="password", key="l_pass")
-            if st.button("Login", use_container_width=True):
-                user = login_user(email, password)
-                if user: st.session_state.user = user; st.rerun()
-                else: st.error("Invalid credentials (Try 'demo'/'demo' if offline)")
-        with tab2:
-            r_email = st.text_input("Email", key="r_email")
-            r_pass = st.text_input("Password", type="password", key="r_pass")
-            r_role = st.selectbox("Role", ["Student", "Admin"])
-            if st.button("Register", use_container_width=True):
-                register_user(r_email, r_pass, r_role)
+    # Use empty columns to center the login box on desktop
+    # On mobile, columns stack automatically
+    col_l, col_center, col_r = st.columns([1, 4, 1])
+    
+    with col_center:
+        st.markdown("<div style='height: 5vh;'></div>", unsafe_allow_html=True) # Spacer
+        st.markdown("""
+        <div style='text-align: center; margin-bottom: 20px;'>
+            <h1 style='font-size: 3rem;'>🔭 N-SIGHT</h1>
+            <p>Full-Stack Spectral Intelligence</p>
+        </div>
+        """, unsafe_allow_html=True)
         
-        if not st.session_state.db_connected: st.info("💡 Offline Mode Active")
+        # Login "Card" UI
+        with st.container():
+            tab_login, tab_reg = st.tabs(["Login", "Sign Up"])
+            
+            with tab_login:
+                email = st.text_input("Email Address", key="l_email")
+                password = st.text_input("Password", type="password", key="l_pass")
+                st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+                if st.button("🚀 Login", use_container_width=True):
+                    user = login_user(email, password)
+                    if user: st.session_state.user = user; st.rerun()
+                    else: st.error("Invalid Login")
+            
+            with tab_reg:
+                r_email = st.text_input("Email", key="r_email")
+                r_pass = st.text_input("Password", type="password", key="r_pass")
+                r_role = st.selectbox("Role", ["Student", "Admin"])
+                st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+                if st.button("✨ Create Account", use_container_width=True):
+                    register_user(r_email, r_pass, r_role)
 
-# --- DASHBOARD ---
+        if not st.session_state.db_connected: 
+            st.warning("⚠️ Offline Mode: Features limited.")
+
+# --- 2. MAIN DASHBOARD ---
 else:
     # SIDEBAR
     with st.sidebar:
-        st.markdown(f"**👤 {st.session_state.user['role']}:** {st.session_state.user['email']}")
-        if st.button("Logout"): st.session_state.user = None; st.rerun()
+        st.image("Nakshatra_transparent_1.png", width=None)
+        st.markdown(f"**👤 {st.session_state.user['role']}**")
+        if st.button("Logout", use_container_width=True): st.session_state.user = None; st.rerun()
         st.divider()
-        input_source = st.radio("Source", ["Upload File", "Live Camera", "Simulation"])
-        st.divider()
-        with st.expander("⚙️ Calibration"):
+        
+        input_source = st.radio("📡 Data Source", ["Upload File", "Live Camera", "Simulation"])
+        
+        with st.expander("⚙️ Calibration Settings"):
             start_wl = st.number_input("Start Å", 4000.0, step=100.0)
             disp = st.number_input("Å/px", 1.5, step=0.1)
-        with st.expander("🎛️ Processing"):
+        with st.expander("🎛️ Signal Processing"):
             smooth = st.slider("Smoothing", 1, 21, 5, 2)
             deriv = st.selectbox("Derivative", [0, 1, 2], format_func=lambda x: ["Raw","Slope","Curve"][x])
 
-    # MAIN HEADER
+    # HEADER
     c1, c2 = st.columns([3,1])
-    c1.title("Spectral Analysis Dashboard")
-    c2.metric("DB Status", "Online" if st.session_state.db_connected else "Offline", delta_color="normal")
+    c1.title("Spectral Dashboard")
+    c2.metric("System Status", "Online" if st.session_state.db_connected else "Local", delta_color="normal")
 
-    # INPUT HANDLING
+    # DATA INGESTION
     data = None
     if input_source == "Upload File":
-        f = st.file_uploader("Upload .fits/.ser", type=["fit", "fits", "ser"])
+        f = st.file_uploader("Upload Spectral Data", type=["fit", "fits", "ser"])
         if f:
             if f.name.endswith('.ser'):
                 r = SERReader(f)
-                if st.button("Stack 50 Frames"): 
+                if st.button("Stack 50 Frames", use_container_width=True): 
                     data = np.mean([r.get_frame(i) for i in range(min(50, r.header['FrameCount']))], axis=0)
                 else: data = r.get_frame(0)
             else:
                 with fits.open(f) as h: data = h[0].data
     elif input_source == "Live Camera":
-        if st.button("Toggle Camera"): st.session_state.run_cam = not st.session_state.run_cam
+        if st.button("Start/Stop Camera", use_container_width=True): st.session_state.run_cam = not st.session_state.run_cam
         if st.session_state.run_cam:
             cap = cv2.VideoCapture(0)
             ret, frame = cap.read()
             if ret:
-                st.image(frame, channels="BGR")
-                if st.button("Capture"):
+                st.image(frame, channels="BGR", use_container_width=True)
+                if st.button("📸 Capture Frame", use_container_width=True):
                     st.session_state.captured_data = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                     st.session_state.run_cam = False; st.rerun()
             cap.release()
@@ -237,95 +315,83 @@ else:
         x = np.linspace(4000, 7000, 1000)
         data = 100 + (x-4000)*0.03 + 500*np.exp(-0.5*((x-6563)/10)**2) + np.random.normal(0, 3, 1000)
 
-    # PROCESS DATA
+    # VISUALIZATION & LOGIC
     if data is not None:
         if data.ndim == 2: flux = np.mean(data[data.shape[0]//2-10:data.shape[0]//2+10, :], axis=0)
         else: flux = data
         
-        # Apply Smoothing & Deriv
         if smooth > 1:
             if smooth % 2 == 0: smooth += 1
             flux = savgol_filter(flux, smooth, 3, deriv=deriv)
         
         x_axis = start_wl + (np.arange(len(flux)) * disp)
 
-        # --- TABS: The Core of the Full Stack App ---
-        tabs = ["📊 Analyze", "🧠 ML Pipeline", "💾 My Library"]
+        # TABS
+        tabs = ["📊 Analyze", "🧠 ML Lab", "💾 Library"]
         if st.session_state.user['role'] == "Admin": tabs.append("🛡️ Admin")
-        curr_tab = st.radio("Tab", tabs, horizontal=True, label_visibility="collapsed")
+        curr_tab = st.radio("Nav", tabs, horizontal=True, label_visibility="collapsed")
         st.divider()
 
-        # 1. ANALYZE TAB (Visualize + Create)
         if curr_tab == "📊 Analyze":
-            fig = go.Figure(go.Scatter(x=x_axis, y=flux, line=dict(color='#00F0FF')))
-            fig.update_layout(template="plotly_dark", height=400, title="Spectrum View")
+            # Plotly chart with 0 margins for mobile
+            fig = go.Figure(go.Scatter(x=x_axis, y=flux, line=dict(color='#00F0FF', width=2), fill='tozeroy'))
+            fig.update_layout(template="plotly_dark", height=350, margin=dict(l=10, r=10, t=10, b=10), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
             st.plotly_chart(fig, use_container_width=True)
             
-            c1, c2 = st.columns([3, 1])
-            s_name = c1.text_input("Label for Cloud Save", "Observation 1")
-            if c2.button("💾 Save to DB"):
-                save_spectrum(s_name, x_axis, flux, st.session_state.user['email'])
+            with st.expander("Save Analysis"):
+                s_name = st.text_input("Label", "Observation 1")
+                if st.button("Save to Cloud", use_container_width=True):
+                    save_spectrum(s_name, x_axis, flux, st.session_state.user['email'])
 
-        # 2. ML PIPELINE TAB (Research Paper Feature)
-        elif curr_tab == "🧠 ML Pipeline":
+        elif curr_tab == "🧠 ML Lab":
             c1, c2 = st.columns(2)
             with c1:
-                st.subheader("1. Build Dataset")
-                label = st.text_input("Class Label (e.g. Star Type A)")
-                if st.button("➕ Add Current to Dataset"):
+                st.info("1. Build Dataset")
+                label = st.text_input("Class Label")
+                if st.button("Add Sample", use_container_width=True):
                     _, rs_flux = resample_spectrum(x_axis, normalize_data(flux))
                     row = pd.DataFrame([np.append([label], rs_flux)], columns=['label'] + [f'px_{i}' for i in range(1000)])
                     st.session_state.dataset = pd.concat([st.session_state.dataset, row], ignore_index=True)
-                    st.success(f"Added! Total samples: {len(st.session_state.dataset)}")
-                st.dataframe(st.session_state.dataset.head(3), height=100)
-
+                    st.success(f"Count: {len(st.session_state.dataset)}")
             with c2:
-                st.subheader("2. Train & Predict")
-                if st.button("🚀 Train Random Forest"):
+                st.info("2. Train & Test")
+                if st.button("Train Model", use_container_width=True):
                     if len(st.session_state.dataset) > 1:
                         df = st.session_state.dataset
                         X, y = df.drop('label', axis=1), df['label']
                         clf = RandomForestClassifier(n_estimators=100)
                         clf.fit(X, y)
                         st.session_state.trained_model = clf
-                        st.success("Model Trained!")
-                    else: st.warning("Need more data.")
+                        st.success("Trained!")
+                    else: st.warning("Need Data")
                 
                 if st.session_state.trained_model:
-                    if st.button("🔮 Predict Current Spectrum"):
+                    if st.button("Predict Live", use_container_width=True):
                         _, input_vec = resample_spectrum(x_axis, normalize_data(flux))
                         pred = st.session_state.trained_model.predict([input_vec])[0]
-                        prob = np.max(st.session_state.trained_model.predict_proba([input_vec]))
-                        st.metric("Prediction", pred, f"{prob:.1%} Conf")
+                        st.metric("Result", pred)
 
-        # 3. LIBRARY TAB (Read, Update, Delete)
-        elif curr_tab == "💾 My Library":
-            search = st.text_input("🔍 Search Library...", "")
+        elif curr_tab == "💾 Library":
+            search = st.text_input("🔍 Filter...", "")
             if st.session_state.db_connected:
                 docs = db.collection('spectra').where('user_id', '==', st.session_state.user['email']).stream()
                 for doc in docs:
                     d = doc.to_dict()
                     if search.lower() in d['label'].lower():
-                        with st.expander(f"📄 {d['label']} ({d['timestamp'].strftime('%Y-%m-%d')})"):
-                            # Update Logic
-                            new_label = st.text_input("Edit Label", d['label'], key=f"edit_{doc.id}")
-                            if st.button("Update", key=f"up_{doc.id}"):
+                        with st.expander(f"{d['label']}"):
+                            new_label = st.text_input("Edit", d['label'], key=f"edit_{doc.id}")
+                            c_up, c_del = st.columns(2)
+                            if c_up.button("Save", key=f"up_{doc.id}", use_container_width=True):
                                 update_spectrum(doc.id, new_label); st.rerun()
-                            # Delete Logic
-                            if st.button("Delete", key=f"del_{doc.id}"):
+                            if c_del.button("Delete", key=f"del_{doc.id}", use_container_width=True):
                                 delete_spectrum(doc.id); st.rerun()
-                            # Visualization
                             st.line_chart(d['flux'], height=100)
-            else: st.info("Connect DB to view library.")
 
-        # 4. ADMIN TAB (RBAC)
         elif curr_tab == "🛡️ Admin":
             if st.session_state.db_connected:
                 u_count = len(list(db.collection('users').stream()))
                 s_count = len(list(db.collection('spectra').stream()))
                 c1, c2 = st.columns(2)
-                c1.metric("Total Users", u_count)
-                c2.metric("Total Spectra", s_count)
-                st.write("All Data Access:")
-                all_data = [{"User": d.to_dict()['user_id'], "Label": d.to_dict()['label']} for d in db.collection('spectra').stream()]
-                st.dataframe(all_data)
+                c1.metric("Users", u_count)
+                c2.metric("Records", s_count)
+                st.dataframe([{"User": d.to_dict()['user_id'], "Label": d.to_dict()['label']} for d in db.collection('spectra').stream()], use_container_width=True)
