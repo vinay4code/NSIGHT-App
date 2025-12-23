@@ -106,19 +106,11 @@ def apply_custom_style():
     }
 
     /* Buttons */
-    .stButton > button {
-    background: linear-gradient(135deg, #4FC3F7, #0288D1);
-    color: #0B0F14 !important;   /* strong dark text */
-    font-weight: 600;
-    font-size: 1rem;
-    border-radius: 12px;
-    height: 3.2rem;
-    border: none;
-}
+    .stButton > button,
+    .stButton > button span {
+        color: #FFFFFF !important;
+    }
 
-.stButton > button span {
-    color: #0B0F14 !important;   /* fixes Streamlit span override */
-}
 
 
     .stButton>button:hover {
