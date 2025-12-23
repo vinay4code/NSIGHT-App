@@ -106,15 +106,20 @@ def apply_custom_style():
     }
 
     /* Buttons */
-    .stButton>button {
-        background: linear-gradient(135deg, var(--primary), #0288D1);
-        color: #021018;
-        border-radius: 10px;
-        font-weight: 600;
-        height: 3rem;
-        border: none;
-        transition: all 0.25s ease;
-    }
+    .stButton > button {
+    background: linear-gradient(135deg, #4FC3F7, #0288D1);
+    color: #0B0F14 !important;   /* strong dark text */
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 12px;
+    height: 3.2rem;
+    border: none;
+}
+
+.stButton > button span {
+    color: #0B0F14 !important;   /* fixes Streamlit span override */
+}
+
 
     .stButton>button:hover {
         background: linear-gradient(135deg, #81D4FA, var(--primary));
@@ -245,7 +250,7 @@ if st.session_state.user is None:
         st.markdown("<div style='height: 5vh;'></div>", unsafe_allow_html=True) # Spacer
         st.markdown("""
         <div style='text-align: center; margin-bottom: 20px;'>
-            <h1 style='font-size: 3rem;'>🔭 N-SIGHT</h1>
+            <h1 style='font-size: 3rem;'>N-SIGHT</h1>
             <p>Full-Stack Spectral Intelligence</p>
         </div>
         """, unsafe_allow_html=True)
