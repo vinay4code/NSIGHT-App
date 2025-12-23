@@ -132,23 +132,20 @@ def apply_custom_style():
         font-family: 'JetBrains Mono', monospace;
         font-weight: 600;
     }
-        /* ===== SYSTEM STATUS COLORS ===== */
+    /* ===== SYSTEM STATUS COLORS ===== */
     div[data-testid="stMetricValue"] {
         font-weight: 700;
     }
     
-    /* Online = bright green with glow */
+    /* Online = bright green */
     div[data-testid="stMetricValue"]:has-text("Online") {
-        color: #00E676 !important;
-        text-shadow: 0 0 12px rgba(0, 230, 118, 0.45);
+        color: #00E676 !important;  /* bright lab green */
     }
     
-    /* Offline = red with glow */
+    /* Offline = red */
     div[data-testid="stMetricValue"]:has-text("Offline") {
-        color: #FF5252 !important;
-        text-shadow: 0 0 12px rgba(255, 82, 82, 0.45);
+        color: #FF5252 !important;  /* warning red */
     }
-
 
     </style>
     """, unsafe_allow_html=True)
