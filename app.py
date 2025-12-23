@@ -77,7 +77,16 @@ def apply_custom_style():
     }
 
     #MainMenu {visibility: hidden;}
-    header {visibility: hidden;}
+    
+    header [data-testid="stToolbar"] {
+        visibility: hidden;
+    }
+    
+    header [data-testid="stDecoration"] {
+        visibility: hidden;
+    }
+
+
 
     /* Cards */
     div[data-testid="stMetric"],
@@ -290,14 +299,12 @@ if st.session_state.user is None:
 else:
     # SIDEBAR
     with st.sidebar:
+        st.button("☰ Menu", help="Open sidebar")
         st.image("Nakshatra_transparent_1.png", use_container_width=True)
         st.markdown(
             "<p style='text-align:center; color:#9BA3AF; font-size:0.85rem; margin-top:6px;'>Spectral Intelligence Platform</p>",
             unsafe_allow_html=True
         )
-
-
-            
         st.markdown(f"**{st.session_state.user['role']}:** {st.session_state.user['email']}")
         if st.button("Logout", use_container_width=True): st.session_state.user = None; st.rerun()
         st.divider()
