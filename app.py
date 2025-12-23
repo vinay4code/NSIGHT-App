@@ -156,6 +156,30 @@ def apply_custom_style():
         color: #FF5252 !important;  /* warning red */
     }
 
+    /* ================== SIDEBAR FIX ================== */
+    
+    /* Reset sidebar spacing */
+    section[data-testid="stSidebar"] > div {
+        padding-top: 1rem !important;
+    }
+    
+    /* Remove accidental margins applied globally */
+    section[data-testid="stSidebar"] * {
+        margin-top: initial !important;
+    }
+    
+    /* Ensure sidebar width stays stable */
+    section[data-testid="stSidebar"] {
+        min-width: 280px !important;
+        max-width: 280px !important;
+    }
+    
+    /* Hide weird internal icons caused by layout overrides */
+    section[data-testid="stSidebar"] button[title="Close sidebar"] {
+        display: none !important;
+    }
+
+
     </style>
     """, unsafe_allow_html=True)
     
