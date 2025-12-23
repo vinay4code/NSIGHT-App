@@ -67,6 +67,31 @@ def apply_custom_style():
     section[data-testid="stSidebar"] > div {
         padding-top:1rem!important;
     }
+    /* ================= LOGIN CENTERING ================= */
+    
+    .login-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    
+    .login-card {
+        width: 420px;
+        padding: 2.5rem;
+        background: rgba(20, 25, 35, 0.85);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    
+    .login-title {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-size: 2.2rem;
+        letter-spacing: 2px;
+    }
+
 
     </style>
     """, unsafe_allow_html=True)
@@ -96,12 +121,27 @@ def resample(w,f,n=1000):
 
 # ================= LOGIN (SHORTENED) =================
 if st.session_state.user is None:
-    st.title("N-SIGHT")
+
+    # ---- Centered login layout ----
+    st.markdown("""
+    <div class="login-wrapper">
+        <div class="login-card">
+    """, unsafe_allow_html=True)
+
+    st.markdown("<h1 class='login-title'>N-SIGHT</h1>", unsafe_allow_html=True)
+
     email = st.text_input("Email")
-    pwd = st.text_input("Password", type="password")
-    if st.button("Login"):
-        st.session_state.user={"email":email,"role":"Student"}
+    password = st.text_input("Password", type="password")
+
+    if st.button("Login", use_container_width=True):
+        st.session_state.user = {"email": email, "role": "Admin"}
         st.rerun()
+
+    st.markdown("""
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
     st.stop()
 
 # ================= SIDEBAR (FIRST) =================
