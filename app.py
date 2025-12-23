@@ -367,7 +367,6 @@ else:
     cam_image = st.camera_input("Capture a frame")
 
     if cam_image is not None:
-        # Convert to numpy array
         image = Image.open(cam_image)
         frame = np.array(image.convert("L"))  # grayscale
 
@@ -375,6 +374,7 @@ else:
 
         st.session_state.captured_data = frame
         data = frame
+
 
     else:
         x = np.linspace(4000, 7000, 1000)
