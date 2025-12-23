@@ -353,7 +353,6 @@ else:
         if st.button("Logout", use_container_width=True): st.session_state.user = None; st.rerun()
         st.divider()
         
-        input_source = st.radio("Data Source", ["Upload File", "Live Camera", "Simulation"])
         
         if data_ready:
             with st.expander("Calibration Settings"):
