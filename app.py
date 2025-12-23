@@ -290,11 +290,11 @@ if st.session_state.user is None:
 else:
     # SIDEBAR
     with st.sidebar:
-        # SAFETY CHECK: Only try to show image if it exists
-        try:
-            st.image("Nakshatra_transparent_1.png", width=None)
-        except Exception:
-            st.markdown("<h2 style='color: #FF4B4B;'>N-SIGHT</h2>", unsafe_allow_html=True)
+        st.image(
+            "Nakshatra_transparent_1.png",
+            use_container_width=True
+        )
+
             
         st.markdown(f"**{st.session_state.user['role']}:** {st.session_state.user['email']}")
         if st.button("Logout", use_container_width=True): st.session_state.user = None; st.rerun()
