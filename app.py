@@ -305,6 +305,39 @@ if st.session_state.user is None:
 
 # --- 2. MAIN DASHBOARD ---
 else:
+    # ... (Keep the rest of the logic: INPUT HANDLING, PROCESSING, TABS same as before) ...
+    # INPUT HANDLING
+    data = None
+    if input_source == "Upload File":
+        f = st.file_uploader("Upload Spectral Data", type=["fit", "fits", "ser"])
+        if f:
+            if f.name.endswith('.ser'):
+                r = SERReader(f)
+                if st.button("Stack 50 Frames", use_container_width=True): 
+                    data = np.mean([r.get_frame(i) for i in range(min(50, r.header['FrameCount']))], axis=0)
+                else: data = r.get_frame(0)
+            else:
+                with fits.open(f) as h: data = h[0].data
+    elif input_source == "Live Camera":
+        st.subheader("Live Camera Capture")
+
+        cam_image = st.camera_input("Capture a frame")
+    
+        if cam_image is not None:
+            image = Image.open(cam_image)
+            frame = np.array(image.convert("L"))  # grayscale
+    
+            st.success("Frame captured successfully")
+    
+            st.session_state.captured_data = frame
+            data = frame
+
+
+    else:
+        x = np.linspace(4000, 7000, 1000)
+        data = 100 + (x-4000)*0.03 + 500*np.exp(-0.5*((x-6563)/10)**2) + np.random.normal(0, 3, 1000)
+    if data is not None:
+        data_ready = True
     # SIDEBAR
     with st.sidebar:
         st.image("Nakshatra_transparent_1.png", use_container_width=True)
@@ -359,39 +392,7 @@ else:
     )
 
 
-    # ... (Keep the rest of the logic: INPUT HANDLING, PROCESSING, TABS same as before) ...
-    # INPUT HANDLING
-    data = None
-    if input_source == "Upload File":
-        f = st.file_uploader("Upload Spectral Data", type=["fit", "fits", "ser"])
-        if f:
-            if f.name.endswith('.ser'):
-                r = SERReader(f)
-                if st.button("Stack 50 Frames", use_container_width=True): 
-                    data = np.mean([r.get_frame(i) for i in range(min(50, r.header['FrameCount']))], axis=0)
-                else: data = r.get_frame(0)
-            else:
-                with fits.open(f) as h: data = h[0].data
-    elif input_source == "Live Camera":
-        st.subheader("Live Camera Capture")
 
-        cam_image = st.camera_input("Capture a frame")
-    
-        if cam_image is not None:
-            image = Image.open(cam_image)
-            frame = np.array(image.convert("L"))  # grayscale
-    
-            st.success("Frame captured successfully")
-    
-            st.session_state.captured_data = frame
-            data = frame
-
-
-    else:
-        x = np.linspace(4000, 7000, 1000)
-        data = 100 + (x-4000)*0.03 + 500*np.exp(-0.5*((x-6563)/10)**2) + np.random.normal(0, 3, 1000)
-    if data is not None:
-        data_ready = True
 
 
     # VISUALIZATION & LOGIC
