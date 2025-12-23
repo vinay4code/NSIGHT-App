@@ -308,6 +308,10 @@ else:
     # ... (Keep the rest of the logic: INPUT HANDLING, PROCESSING, TABS same as before) ...
     # INPUT HANDLING
     data = None
+    input_source = st.sidebar.radio(
+    "Data Source",
+    ["Upload File", "Live Camera", "Simulation"]
+)
     if input_source == "Upload File":
         f = st.file_uploader("Upload Spectral Data", type=["fit", "fits", "ser"])
         if f:
