@@ -362,20 +362,20 @@ else:
             else:
                 with fits.open(f) as h: data = h[0].data
     elif input_source == "Live Camera":
-        col_cam1, col_cam2 = st.columns([1, 2])
-        with col_cam1:
-            if st.button("Toggle Camera", use_container_width=True): st.session_state.run_cam = not st.session_state.run_cam
-        with col_cam2:
-            if st.session_state.run_cam:
-                cap = cv2.VideoCapture(0)
-                ret, frame = cap.read()
-                if ret:
-                    st.image(frame, channels="BGR", use_container_width=True)
-                    if st.button("📸 Capture Frame", use_container_width=True):
-                        st.session_state.captured_data = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                        st.session_state.run_cam = False; st.rerun()
-                cap.release()
-        if st.session_state.captured_data is not None: data = st.session_state.captured_data
+    st.subheader("Live Camera Capture")
+
+    cam_image = st.camera_input("Capture a frame")
+
+    if cam_image is not None:
+        # Convert to numpy array
+        image = Image.open(cam_image)
+        frame = np.array(image.convert("L"))  # grayscale
+
+        st.success("Frame captured successfully")
+
+        st.session_state.captured_data = frame
+        data = frame
+
     else:
         x = np.linspace(4000, 7000, 1000)
         data = 100 + (x-4000)*0.03 + 500*np.exp(-0.5*((x-6563)/10)**2) + np.random.normal(0, 3, 1000)
