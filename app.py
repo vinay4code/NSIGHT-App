@@ -76,7 +76,7 @@ def apply_custom_style():
         padding-bottom: 4rem !important;
     }
 
-    #MainMenu {visibility: hidden;}
+    #MainMenu 
     
     header [data-testid="stToolbar"] {
         visibility: hidden;
