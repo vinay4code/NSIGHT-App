@@ -253,6 +253,11 @@ if 'captured_data' not in st.session_state: st.session_state.captured_data = Non
 if 'run_cam' not in st.session_state: st.session_state.run_cam = False
 data_ready = False
 data = None
+# --- DEFAULT PROCESSING PARAMETERS ---
+smooth = 1
+deriv = 0
+start_wl = 4000.0
+disp = 1.5
 
 
 # =========================================================
