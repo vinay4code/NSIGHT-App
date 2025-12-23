@@ -1,0 +1,11 @@
+streamlit
+opencv-python-headless
+numpy
+pandas
+scikit-learn
+astropy
+plotly
+scipy
+pillow
+firebase-admin
+bcrypt

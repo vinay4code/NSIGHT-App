@@ -1,0 +1,17 @@
+Ignore secrets and keys
+
+.streamlit/secrets.toml
+secrets.toml
+service_account.json
+*.json
+
+Ignore virtual environments
+
+.venv/
+venv/
+env/
+pycache/
+
+Ignore VS Code settings
+
+.vscode/
