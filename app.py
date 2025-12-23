@@ -251,6 +251,9 @@ if 'dataset' not in st.session_state: st.session_state.dataset = pd.DataFrame(co
 if 'trained_model' not in st.session_state: st.session_state.trained_model = None
 if 'captured_data' not in st.session_state: st.session_state.captured_data = None
 if 'run_cam' not in st.session_state: st.session_state.run_cam = False
+data_ready = False
+data = None
+
 
 # =========================================================
 #                       MAIN APP
@@ -310,12 +313,15 @@ else:
         
         input_source = st.radio("Data Source", ["Upload File", "Live Camera", "Simulation"])
         
-        with st.expander("Calibration Settings"):
-            start_wl = st.number_input("Start Å", 4000.0, step=100.0)
-            disp = st.number_input("Å/px", 1.5, step=0.1)
-        with st.expander("Signal Processing"):
-            smooth = st.slider("Smoothing", 1, 21, 5, 2)
-            deriv = st.selectbox("Derivative", [0, 1, 2], format_func=lambda x: ["Raw","Slope","Curve"][x])
+        if data_ready:
+            with st.expander("Calibration Settings"):
+                start_wl = st.number_input("Start Å", 4000.0, step=100.0)
+                disp = st.number_input("Å/px", 1.5, step=0.1)
+            with st.expander("Signal Processing"):
+                smooth = st.slider("Smoothing", 1, 21, 5, 2)
+                deriv = st.selectbox("Derivative", [0, 1, 2], format_func=lambda x: ["Raw","Slope","Curve"][x])
+        else:
+            st.info("Load data to enable calibration and processing")
 
     # HEADER
     c1, c2 = st.columns([3,1])
@@ -379,6 +385,9 @@ else:
     else:
         x = np.linspace(4000, 7000, 1000)
         data = 100 + (x-4000)*0.03 + 500*np.exp(-0.5*((x-6563)/10)**2) + np.random.normal(0, 3, 1000)
+    if data is not None:
+    data_ready = True
+
 
     # VISUALIZATION & LOGIC
     if data is not None:
