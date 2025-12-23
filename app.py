@@ -82,6 +82,10 @@ for k, v in {
     "trained_model": None
 }.items():
     st.session_state.setdefault(k, v)
+# Default calibration (safe fallback)
+DEFAULT_START_WL = 4000.0
+DEFAULT_DISP = 1.5
+
 
 # ================= HELPERS =================
 def normalize(x): return (x-np.min(x))/(np.max(x)-np.min(x)+1e-6)
@@ -112,13 +116,15 @@ with st.sidebar:
 
     if st.session_state.data_ready:
         with st.expander("Calibration Settings"):
-            start_wl = st.number_input("Start Å", 4000.0)
-            disp = st.number_input("Å/px", 1.5)
-        with st.expander("Signal Processing"):
-            smooth = st.slider("Smoothing",1,21,5,2)
-            deriv = st.selectbox("Derivative",[0,1,2])
-    else:
-        st.info("Load data to enable calibration & processing")
+            st.session_state.start_wl = st.number_input(
+                "Start Å", 
+                value=st.session_state.get("start_wl", DEFAULT_START_WL)
+            )
+            st.session_state.disp = st.number_input(
+                "Å / pixel", 
+                value=st.session_state.get("disp", DEFAULT_DISP)
+            )
+
 
 # ================= MAIN CONTENT =================
 st.title("Spectral Analysis Dashboard")
@@ -147,7 +153,12 @@ if data is not None:
     if 'smooth' in locals() and smooth>1:
         flux=savgol_filter(flux,smooth if smooth%2 else smooth+1,3,deriv)
 
-    x_axis=start_wl+(np.arange(len(flux))*disp)
+    # ---- Safe calibration values ----
+    start_wl = st.session_state.get("start_wl", DEFAULT_START_WL)
+    disp = st.session_state.get("disp", DEFAULT_DISP)
+    
+    x_axis = start_wl + (np.arange(len(flux)) * disp)
+
 
     fig=go.Figure(go.Scatter(x=x_axis,y=flux,fill='tozeroy',line=dict(color="#4FC3F7")))
     fig.update_layout(template="plotly_dark",height=350,margin=dict(l=10,r=10,t=10,b=10))
