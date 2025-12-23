@@ -206,6 +206,19 @@ if data is not None:
 
     if tab=="Analyze":
         st.success("Spectrum loaded successfully")
+        if st.button("Save Analysis to Library"):
+            if "saved_spectra" not in st.session_state:
+                st.session_state.saved_spectra = []
+        
+            st.session_state.saved_spectra.append({
+                "name": f"Spectrum {len(st.session_state.saved_spectra)+1}",
+                "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                "wavelength": x_axis.tolist(),
+                "flux": flux.tolist()
+            })
+        
+            st.toast("Saved to Library")
+
 
     if tab=="ML Lab":
         lbl=st.text_input("Label")
@@ -223,5 +236,17 @@ if data is not None:
                 st.session_state.trained_model=clf
                 st.success("Model trained")
 
-    if tab=="Library":
-        st.info("Cloud library placeholder")
+    if tab == "Library":
+        st.subheader("Saved Analyses")
+    
+        if "saved_spectra" not in st.session_state:
+            st.session_state.saved_spectra = []
+    
+        if len(st.session_state.saved_spectra) == 0:
+            st.info("No saved analyses yet.")
+        else:
+            for i, item in enumerate(st.session_state.saved_spectra):
+                st.markdown(
+                    f"**{i+1}.** {item['name']} — {item['timestamp']}"
+                )
+
