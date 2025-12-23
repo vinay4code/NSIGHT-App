@@ -76,19 +76,19 @@ The app follows a **Monolithic Cloud Architecture**, where frontend and backend 
 
 ```mermaid
 graph TD
-    User[User / Client] -->|HTTPS| App[Streamlit Application]
+    U["User / Client"] -->|HTTPS| A["Streamlit Application"]
 
-    subgraph "Application Logic (Python)"
-        App --> Auth[Auth Module (Bcrypt)]
-        App --> ML[ML Engine (Scikit-Learn)]
-        App --> SP[Signal Processor (SciPy/Astropy)]
+    subgraph AL["Application Logic (Python)"]
+        A --> AUTH["Auth Module - Bcrypt"]
+        A --> ML["ML Engine - Scikit Learn"]
+        A --> SP["Signal Processor - SciPy & Astropy"]
     end
 
-    subgraph "Cloud Data Layer"
-        Auth -->|Read/Write| DB[(Firebase Firestore)]
-        App -->|CRUD Ops| DB
+    subgraph CD["Cloud Data Layer"]
+        AUTH --> DB["Firebase Firestore"]
+        A --> DB
     end
 
-    subgraph "Hardware Layer"
-        User -->|USB Stream| Camera[QHY/Webcam]
+    subgraph HW["Hardware Layer"]
+        U --> CAM["QHY Camera / Webcam"]
     end
