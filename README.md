@@ -5,7 +5,7 @@ Nakshatra **N-SIGHT** is an industry-grade, full-stack web application designed 
 It integrates a **Machine Learning pipeline** with **cloud-based data management**, enabling researchers and students to upload, analyze, process, and classify stellar spectral data.
 
 **Live Demo:**  
-> _Insert your Streamlit Cloud link here_
+>(https://nsight-app.streamlit.app/)
 
 ---
 
