@@ -393,39 +393,6 @@ else:
         else:
             st.info("Load data to enable calibration and processing")
 
-    # HEADER
-    c1, c2 = st.columns([3,1])
-    c1.title("Spectral Analysis Dashboard")
-    status = "Online" if st.session_state.db_connected else "Offline"
-    status_color = "#00E676" if status == "Online" else "#FF5252"
-    
-    c2.markdown(
-        f"""
-        <div style="
-            background: rgba(255,255,255,0.04);
-            border-radius: 14px;
-            padding: 1.2rem;
-            border: 1px solid rgba(255,255,255,0.08);
-        ">
-            <div style="font-size: 0.85rem; color: #9BA3AF;">
-                System Status
-            </div>
-            <div style="
-                font-size: 1.8rem;
-                font-weight: 700;
-                color: {status_color};
-                text-shadow: 0 0 12px {status_color}55;
-            ">
-                {status}
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-
-
 
     # VISUALIZATION & LOGIC
     if data is not None:
